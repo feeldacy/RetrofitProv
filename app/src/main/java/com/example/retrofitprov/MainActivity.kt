@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        //masukin executorservice, ambil dbnya
         executorService = Executors.newSingleThreadExecutor()
         val db = FavoriteRoomDatabase.getDatabase(this)
         mFavoriteDao = db!!.favoriteDao()!!
@@ -52,9 +53,11 @@ class MainActivity : AppCompatActivity() {
                     val provMap = response.body()!!
                     val provList = provMap.values.toList()
 
+                    //observe live data, ngemap datanya
                     mFavoriteDao.allFavorites.observe(this@MainActivity) { favoriteList ->
                         val favoriteProvinces = favoriteList.map { it.provName }.toSet()
 
+                        //bikin instance adapter, masukin parameter, callback function
                         val adapter = ProvAdapter(provList, favoriteProvinces) { province, isBookmarked ->
                             handleBookmark(province, isBookmarked)
                         }
@@ -72,6 +75,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        // pindah ke page favorite
         binding.btnFavorites.setOnClickListener{
             val intent = Intent(this, SecondActivity::class.java)
             startActivity(intent)
@@ -84,17 +88,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // kalau true dimasukin ke db, kl false di delete
     private fun handleBookmark(province: String, isBookmarked: Boolean) {
         executorService.execute {
-            val isFavorite = mFavoriteDao.isFavorite(province)
             if (isBookmarked) {
-                if (isFavorite) {
-                    runOnUiThread {
-                        Toast.makeText(this, "Province already in favorites", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    mFavoriteDao.insert(Favorite(provName = province))
-                }
+                mFavoriteDao.insert(Favorite(provName = province))
             } else {
                 mFavoriteDao.deleteByProvName(province)
             }

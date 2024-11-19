@@ -41,13 +41,7 @@ class ProvAdapter(
 
         holder.bookmarkIcon.setOnClickListener {
             val newBookmarkState = !isBookmarked
-            if (newBookmarkState) {
-                bookmarkedItems.add(province)
-            } else {
-                bookmarkedItems.remove(province)
-            }
             onBookmarkClicked(province, newBookmarkState)
-            notifyItemChanged(position)
         }
     }
 

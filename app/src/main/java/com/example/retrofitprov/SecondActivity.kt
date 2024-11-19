@@ -56,7 +56,6 @@ class SecondActivity : AppCompatActivity() {
             val adapter: ArrayAdapter<String> =
                 ArrayAdapter(this, android.R.layout.simple_list_item_1, favoriteProvName)
 
-
             binding.lvFavorites.adapter = adapter
         }
     }
